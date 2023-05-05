@@ -3,6 +3,13 @@ import logo from './logo.svg';
 import './App.css';
 
 function App() {
+  
+  const test = async () => {
+    await fetch("http://localhost:5000/")
+      .then((val: Response) => console.log(val))
+      .catch((err) => console.log(err));
+  }
+
   return (
     <div className="App">
       <header className="App-header">
@@ -18,6 +25,8 @@ function App() {
         >
           Learn React
         </a>
+
+        <button onClick={() => test()}>Click Me</button>
       </header>
     </div>
   );
