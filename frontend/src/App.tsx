@@ -5,9 +5,11 @@ import './App.css';
 function App() {
   
   const test = async () => {
-    await fetch("http://localhost:5000/")
-      .then((val: Response) => console.log(val))
+    const response = await fetch("http://localhost:5000/")
       .catch((err) => console.log(err));
+    
+    const msg = await response?.json();
+    console.log(msg);
   }
 
   return (
