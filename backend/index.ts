@@ -7,7 +7,7 @@ dotenv.config();
 const app: Express = express();
 app.use(cors<Request>());
 app.use(express.json());
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 3001;
 
 app.get('/', (req: Request, res: Response) => {
     res.json({msg: 'Hello World'});
