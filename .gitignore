@@ -130,4 +130,6 @@ dist
 .pnp.*
 
 shortest_postgres_data/
+short_db/
+short_redis/
 
