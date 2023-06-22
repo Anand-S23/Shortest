@@ -38,7 +38,7 @@ export default function App() {
         }
 
         axios.post(apiEndpoint, { url: inputURL })
-            .then((response) => handleGenerated(response.data.url))
+            .then((response) => console.log(response.data))
             .catch((error) => handleError(error));
     }
 
