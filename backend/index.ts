@@ -67,7 +67,7 @@ app.post('/', async (req: Request, res: Response) => {
             .json({"error": "Could not insert url into database"});
     }
 
-    return res.json(insert_result);
+    return res.json(insert_result[0]);
 });
 
 app.listen(port, () => {

@@ -18,17 +18,20 @@ const validateLongURL = (inputURL: string) => {
 
 export default function App() {
     const [value, setValue] = useState('');
+    const [visitCount, setVisitCount] = useState(-1);
     const [error, setError] = useState('');
     const [short, setShort] = useState('');
 
-    const handleGenerated = (response: string) => {
-        setShort(response);
+    const handleGenerated = (shortHash: string, visitCount: number) => {
+        setShort(window.location.href + shortHash);
+        setVisitCount(visitCount);
         setError('');
     }
 
     const handleError = (msg: string) => {
         setError(msg);
         setShort('');
+        setVisitCount(-1);
     }
 
     const generateURL = async (inputURL: string) => {
@@ -38,8 +41,14 @@ export default function App() {
         }
 
         axios.post(apiEndpoint, { url: inputURL })
-            .then((response) => console.log(response.data))
+            .then((response) => handleGenerated(
+                response.data.short_hash, response.data.visit_count))
             .catch((error) => handleError(error));
+    }
+
+    const copyText = () => {
+        navigator.clipboard.writeText(short);
+        alert("Text copied!");
     }
 
     return (
@@ -50,6 +59,8 @@ export default function App() {
                     Shortest
                 </h1>
             </nav>
+
+            <h3 className="pt-8 text-xl text-center">Enter a link to shorten, and get stats if URL already exists!</h3>
 
             <div className="mx-8 md:mx-32 lg:mx-52">
                 {/* URL Form */}
@@ -76,11 +87,31 @@ export default function App() {
                     </div>
                 </div>
 
-                {/* Generated Short URL */
-                    short !== '' && 
-                    <div className="py-4 flex justify-center">
-                        <p>{short.toString()}</p>
-                    </div>
+                <div className="pb-4 flex justify-center">
+                    {/* Generated Short URL */
+                        short !== '' && 
+                        <div className="relative flex h-10 w-full min-w-[200px] max-w-[24rem] md:max-w-[48rem] lg:max-w-[56rem] text-lg">
+                            <p className="peer h-full w-full rounded-[7px] border border-black-200 px-3 py-2.5 pr-20 font-sans text-sm font-normal text-blue-gray-700 outline outline-0 transition-all">
+                                {short.toString()}
+                            </p>
+                            <button
+                                type="button"
+                                className="!absolute right-1 top-1 z-10 select-none rounded bg-amber-400 py-2 px-4 text-center align-middle font-sans text-xs font-bold uppercase text-black shadow-md shadow-amber-400/20 transition-all hover:shadow-lg hover:shadow-amber-400/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none peer-placeholder-shown:pointer-events-none peer-placeholder-shown:bg-blue-gray-500 peer-placeholder-shown:opacity-50 peer-placeholder-shown:shadow-none"
+                                data-ripple-light="true"
+                                onClick={() => copyText()}
+                            >
+                                Copy
+                            </button>
+                        </div>
+                    }
+                </div>
+
+                {/* Visited Count */
+                    visitCount >= 0 && 
+                    <p className="h-10 w-full min-w-[200px] text-center pt-3"> 
+                        <span className="font-bold">Visit Count: </span>
+                        {visitCount.toString()}
+                    </p>
                 }
 
                 {/* Error Message */
