@@ -1,4 +1,4 @@
-import express, { Express, Request, Response } from 'express';
+import express, { Express, Request, Response, NextFunction } from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import { Pool } from 'pg';
@@ -25,6 +25,15 @@ const query = async (query: string, params: any[]) => {
     return rows;
 }
 
+const rate_limiter = (req: Request, res: Response, next: NextFunction) => {
+    var ip = req.ip;
+    console.log(ip);
+
+    // TODO: rate limit
+
+    next();
+}
+
 app.get('/', (req: Request, res: Response) => {
     pool.query('SELECT * FROM shortest', (error, results) => {
         if (error) {
@@ -33,6 +42,10 @@ app.get('/', (req: Request, res: Response) => {
         res.status(200).json(results.rows);
     });
 });
+
+app.get('/test', rate_limiter, (req: Request, res: Response) => {
+    res.send("Test rate limiter");
+})
 
 app.post('/', async (req: Request, res: Response) => {
     const { url } = req.body;

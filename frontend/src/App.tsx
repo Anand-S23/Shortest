@@ -19,6 +19,7 @@ const validateLongURL = (inputURL: string) => {
 export default function App() {
     const [value, setValue] = useState('');
     const [visitCount, setVisitCount] = useState(-1);
+    const [msg, setMsg] = useState('');
     const [error, setError] = useState('');
     const [short, setShort] = useState('');
 
@@ -26,12 +27,14 @@ export default function App() {
         setShort(window.location.href + shortHash);
         setVisitCount(visitCount);
         setError('');
+        setMsg('');
     }
 
     const handleError = (msg: string) => {
         setError(msg);
         setShort('');
         setVisitCount(-1);
+        setMsg('');
     }
 
     const generateURL = async (inputURL: string) => {
@@ -48,7 +51,7 @@ export default function App() {
 
     const copyText = () => {
         navigator.clipboard.writeText(short);
-        alert("Text copied!");
+        setMsg("Text copied!");
     }
 
     return (
@@ -112,6 +115,15 @@ export default function App() {
                         <span className="font-bold">Visit Count: </span>
                         {visitCount.toString()}
                     </p>
+                }
+
+                {/* Success Message */
+                    msg !== '' && 
+                    <div className="py-4 flex justify-center">
+                        <p className="bg-green-600 text-white text-center text-lg min-w-[200px] max-w-[24rem] md:max-w-[48rem] lg:max-w-[56rem]">
+                            {msg}
+                        </p>
+                    </div>
                 }
 
                 {/* Error Message */
