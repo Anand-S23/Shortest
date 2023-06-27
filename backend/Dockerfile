@@ -8,5 +8,6 @@ COPY . .
 
 RUN npm run build
 
+# CMD ["concurrently", "\"npx tsc --watch\"", "\"nodemon -q dist/index.js\""]
 CMD ["node", "./dist/index.js"]
 
