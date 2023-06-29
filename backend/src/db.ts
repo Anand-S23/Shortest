@@ -1,4 +1,5 @@
 import { Pool } from 'pg';
+import { createClient } from 'redis';
 
 export const pg_pool = new Pool({
     user: process.env.POSTGRES_USER || 'postgres',
@@ -6,6 +7,11 @@ export const pg_pool = new Pool({
     host: process.env.POSTGRES_HOST || 'localhost',
     port: 5432,
     database: process.env.POSTGRES_DB || 'shortest_db'
+});
+
+const REDIS_URL = process.env.REDIS_URL || 'redis://localhost:6380';
+export const redis_client = createClient({
+    url: REDIS_URL
 });
 
 // TODO: Error handling

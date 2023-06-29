@@ -18,7 +18,7 @@ services:
     container_name: short_redis
     restart: always
     ports:
-      - '6400:6379'
+      - '6380:6379'
     volumes: 
       - short_redis:/data
 

@@ -2,9 +2,11 @@ import express, { Express, Request, Response, NextFunction } from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
 
-import { pg_pool } from "./db";
+import { redis_client } from "./db";
 import { rate_limiter } from "./middleware";
-import { getURLs, postURL } from "./controller";
+import { rlTest, getURLs, postURL } from "./controller";
+
+// Initalize App //
 
 const app: Express = express();
 app.use(express.json());
@@ -12,12 +14,21 @@ app.use(cors<Request>());
 
 dotenv.config();
 
+redis_client.on('connect', (err) => {
+    if (err) {
+        console.log('Could not establish a connection with Redis. ' + err);
+    } else {
+        console.log('Connected to Redis successfully!');
+    }
+});
+
+// Routes //
+
 app.get('/', getURLs);
 app.post('/', postURL);
+app.get('/test', rate_limiter, rlTest);
 
-app.get('/test', rate_limiter, (req: Request, res: Response) => {
-    res.send("Test rate limiter");
-})
+// Start Server //
 
 const port = process.env.PORT || 3001;
 app.listen(port, () => {

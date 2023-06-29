@@ -3,6 +3,11 @@ import sha256 from 'crypto-js/sha256';
 
 import { query } from "./db";
 
+// TODO: Remove
+export const rlTest = (req: Request, res: Response) => {
+    res.send("Test rate limiter");
+}
+
 export const getURLs = async (req: Request, res: Response) => {
     const urls = await query('SELECT * FROM shortest', []);
     res.status(200).json(urls);
