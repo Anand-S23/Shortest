@@ -9,14 +9,14 @@ export const pg_pool = new Pool({
     database: process.env.POSTGRES_DB || 'shortest_db'
 });
 
-const REDIS_URL = process.env.REDIS_URL || 'redis://localhost:6380';
+const REDIS_URL = process.env.REDIS_URL || 'redis://localhost:6379';
 export const redis_client = createClient({
     url: REDIS_URL
 });
 
-// TODO: Error handling
 export const query = async (query: string, params: any[]) => {
-    const {rows, fields} = await pg_pool.query(query, params);
+    const {rows, fields} = await pg_pool.query(query, params)
+        .catch((err) => { throw err });
     return rows;
 }
 

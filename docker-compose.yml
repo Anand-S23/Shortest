@@ -12,6 +12,8 @@ services:
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
       - '6500:5432'
+    networks:
+      - shared-network
 
   redis:
     image: redis:latest
@@ -21,6 +23,8 @@ services:
       - '6380:6379'
     volumes: 
       - short_redis:/data
+    networks:
+      - shared-network
 
   backend:
     container_name: short_backend
@@ -34,7 +38,12 @@ services:
     depends_on:
       - postgres
       - redis
+    networks:
+      - shared-network
 
 volumes:
   short_db:
   short_redis:
+
+networks:
+  shared-network:
