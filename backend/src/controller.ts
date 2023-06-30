@@ -45,7 +45,7 @@ export const postURL = async (req: Request, res: Response) => {
 
         return res.json(insert_result[0]);
     } catch (err) {
-        return res.status(500).json({"error" : "DB error: " + err });
+        return res.status(500).json("DB error: " + err);
     }
 }
 

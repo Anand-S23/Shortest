@@ -46,7 +46,7 @@ export default function App() {
         axios.post(apiEndpoint, { url: inputURL })
             .then((response) => handleGenerated(
                 response.data.short_hash, response.data.visit_count))
-            .catch((error) => handleError(error));
+            .catch((error) => handleError(error.request.responseText));
     }
 
     const copyText = () => {

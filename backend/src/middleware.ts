@@ -12,7 +12,7 @@ export const rate_limiter = async (
     ip = ip?.toString().replace('::ffff:', '');
 
     if (ip === undefined) {
-        return res.status(401).json({ "error": "IP not valid" });
+        return res.status(401).json("IP not valid");
     }
 
     try {
@@ -20,9 +20,9 @@ export const rate_limiter = async (
 
         if (attempts >= MAX_ATTEMPTS_IN_WINDOW) {
             // TODO: might want to return retry in
-            return res.status(429).json({
-                'error': 'Too many requests, only 3 per hour are allowed'
-            });
+            return res.status(429).json(
+                'Too many requests, only 3 per hour are allowed'
+            );
         } else if (attempts > 0) {
             await redis_client.incr(ip);
         } else {
@@ -30,7 +30,7 @@ export const rate_limiter = async (
         }
 
     } catch (err) {
-        return res.status(500).json({'error': 'DB error: ' + err});
+        return res.status(500).json('DB error: ' + err);
     }
 
     next();
