@@ -4,7 +4,7 @@ import cors from 'cors';
 
 import { redis_client } from "./db";
 import { rate_limiter } from "./middleware";
-import { getURLs, postURL } from "./controller";
+import { getURLs, redirectURL, postURL } from "./controller";
 
 // Initalize App //
 
@@ -20,6 +20,7 @@ dotenv.config();
 
 app.get('/', getURLs);
 app.post('/', rate_limiter, postURL);
+app.get('/:current_hash', redirectURL);
 
 // Start Server //
 

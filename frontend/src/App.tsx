@@ -1,9 +1,9 @@
 import React from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ReactComponent as Logo } from './link.svg';
 import axios from 'axios';
 
-const apiEndpoint = "http://localhost:3001/";
+const apiEndpoint = "http://localhost:3001";
 
 const validateLongURL = (inputURL: string) => {
     var pattern = new RegExp('^(https?:\\/\\/)?'+ // protocol
@@ -22,6 +22,12 @@ export default function App() {
     const [msg, setMsg] = useState('');
     const [error, setError] = useState('');
     const [short, setShort] = useState('');
+
+    useEffect(() => {
+        if (window.location.pathname !== '/') {
+            window.location.replace(apiEndpoint + window.location.pathname);
+        }
+    }, [])
 
     const handleGenerated = (shortHash: string, visitCount: number) => {
         setShort(window.location.href + shortHash);

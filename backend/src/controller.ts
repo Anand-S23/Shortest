@@ -9,6 +9,30 @@ export const getURLs = async (req: Request, res: Response) => {
     res.status(200).json(urls);
 }
 
+export const redirectURL = async (req: Request, res: Response) => {
+    const { current_hash } = req.params;
+
+    try {
+        const url_response = await query(
+            'SELECT * FROM shortest WHERE short_hash = $1', [current_hash]);
+
+        if (url_response.length === 0) {
+            res.status(404).json("The website does not exist in DB!");
+        }
+
+        const id = url_response[0].id;
+        const long_url = url_response[0].long_url;
+        await query(
+            'UPDATE shortest SET visit_count = visit_count + 1 WHERE id = $1',
+            [id]
+        );
+
+        return res.redirect(302, long_url);
+    } catch (err) {
+        return res.status(500).json(err);
+    }
+}
+
 export const postURL = async (req: Request, res: Response) => {
     try {
         const { url } = req.body;
