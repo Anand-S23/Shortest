@@ -3,6 +3,8 @@ import sha256 from 'crypto-js/sha256';
 
 import { query } from "./db";
 
+const PAGE_404_URL = process.env.PAGE_404_URL || 'http://localhost:3000/404';
+
 export const getURLs = async (req: Request, res: Response) => {
     const urls = await query('SELECT * FROM shortest', [])
         .catch((err) => res.status(500).json(err));
@@ -17,7 +19,7 @@ export const redirectURL = async (req: Request, res: Response) => {
             'SELECT * FROM shortest WHERE short_hash = $1', [current_hash]);
 
         if (url_response.length === 0) {
-            res.status(404).json("The website does not exist in DB!");
+            return res.redirect(302, PAGE_404_URL);
         }
 
         const id = url_response[0].id;
