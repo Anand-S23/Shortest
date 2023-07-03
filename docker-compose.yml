@@ -41,6 +41,19 @@ services:
     networks:
       - shared-network
 
+  nginx:
+    image: nginx:latest
+    restart: always
+    ports:
+      - 80:80
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/conf.d:/etc/nginx/conf.d
+    depends_on:
+      - backend
+    network:
+      - shared-network
+
 volumes:
   short_db:
   short_redis:
