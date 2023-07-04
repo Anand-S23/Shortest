@@ -3,7 +3,8 @@ import { useState, useEffect } from 'react';
 import { ReactComponent as Logo } from './link.svg';
 import axios from 'axios';
 
-const apiEndpoint = "http://localhost:3001";
+//const apiEndpoint = "http://localhost:3001";
+const apiEndpoint = "http://54.209.76.184:8080";
 
 const validateLongURL = (inputURL: string) => {
     var pattern = new RegExp('^(https?:\\/\\/)?'+ // protocol
