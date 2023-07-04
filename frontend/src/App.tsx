@@ -60,7 +60,15 @@ export default function App() {
     }
 
     const generateURL = async (inputURL: string) => {
-        if (!validateLongURL(inputURL)) {
+        let actualURL = inputURL.trim().toLowerCase();
+
+        if (actualURL.substring(0, 5) !== 'https' &&
+            actualURL.substring(0, 4) !== 'http') {
+            actualURL = 'https://' + actualURL;
+            console.log(actualURL);
+        }
+
+        if (!validateLongURL(actualURL)) {
             handleError('URL entered is not valid. Example: https://www.example.com');
             return;
         }
