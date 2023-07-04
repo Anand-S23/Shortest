@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import sha256 from 'crypto-js/sha256';
 
-import { query } from "./db";
+import { pg_pool, query } from "./db";
 
 const PAGE_404_URL = process.env.PAGE_404_URL || 'http://localhost:3000/404';
 
