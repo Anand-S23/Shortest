@@ -1,21 +1,14 @@
-import React from 'react';
 import { useState, useEffect } from 'react';
 import { ReactComponent as Logo } from './link.svg';
 import axios from 'axios';
+import { z } from 'zod';
 
 const apiEndpoint = "http://localhost:3001";
 
-const validateLongURL = (inputURL: string) => {
-    let url;
-
-    try {
-        url = new URL(inputURL);
-    } catch (err) {
-        return false;  
-    }
-    
-    return url.protocol === "http:" || url.protocol === "https:";
-}
+const inputValidator = z.string()
+    .trim()
+    .url({ message: "Must provide a valid URL" })
+    .startsWith("https://", { message: "Must provide a valid URL" });
 
 export default function App() {
     const [value, setValue] = useState('');
@@ -60,23 +53,16 @@ export default function App() {
     }
 
     const generateURL = async (inputURL: string) => {
-        let actualURL = inputURL.trim().toLowerCase();
+        try {
+            inputValidator.parse(inputURL);
 
-        if (actualURL.substring(0, 5) !== 'https' &&
-            actualURL.substring(0, 4) !== 'http') {
-            actualURL = 'https://' + actualURL;
-            console.log(actualURL);
+            axios.post(apiEndpoint, { url: inputURL })
+                .then((response) => handleGenerated(
+                    response.data.short_hash, response.data.visit_count))
+                .catch((error) => handleError(error.request.responseText));
+        } catch (err) {
+            handleError("Please provide a valid URL");
         }
-
-        if (!validateLongURL(actualURL)) {
-            handleError('URL entered is not valid. Example: https://www.example.com');
-            return;
-        }
-
-        axios.post(apiEndpoint, { url: actualURL })
-            .then((response) => handleGenerated(
-                response.data.short_hash, response.data.visit_count))
-            .catch((error) => handleError(error.request.responseText));
     }
 
     const copyText = () => {
