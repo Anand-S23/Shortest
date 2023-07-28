@@ -1,21 +1,18 @@
 import { useState, useEffect } from 'react';
 import { ReactComponent as Logo } from './link.svg';
-import axios from 'axios';
-import { z } from 'zod';
-
-const apiEndpoint = "http://localhost:3001";
-
-const inputValidator = z.string()
-    .trim()
-    .url({ message: "Must provide a valid URL" })
-    .startsWith("https://", { message: "Must provide a valid URL" });
+import { MessageData, Toast } from './components/Toast';
+import { URLData, URLInfo } from './components/URLInfo';
+import { InputField } from './components/InputField';
+import { apiEndpoint } from './config';
 
 export default function App() {
-    const [value, setValue] = useState('');
-    const [visitCount, setVisitCount] = useState(-1);
-    const [msg, setMsg] = useState('');
-    const [error, setError] = useState('');
-    const [short, setShort] = useState('');
+    const [messageData, setMessageData] = useState<MessageData>({
+        text: '', isError: false
+    });
+
+    const [generatedData, setGeneratedData] = useState<URLData>({
+        shortURL: '', visitCount: 0
+    });
 
     const [err404, setErr404] = useState(false);
 
@@ -25,7 +22,10 @@ export default function App() {
         if (pathname !== '/') {
             if (pathname === '/404') {
                 setErr404(true);
-                handleError("404 website not found in database, redirecting in 5 seconds...");
+                setMessageData({
+                    text: '404 website not found in database, redirecting in 5 seconds...', 
+                    isError: true
+                });
 
                 setTimeout(() => {
                     window.location.replace(window.location.origin);
@@ -37,38 +37,6 @@ export default function App() {
             window.location.replace(apiEndpoint + pathname);
         }
     }, [])
-
-    const handleGenerated = (shortHash: string, visitCount: number) => {
-        setShort(window.location.href + shortHash);
-        setVisitCount(visitCount);
-        setError('');
-        setMsg('');
-    }
-
-    const handleError = (msg: string) => {
-        setError(msg);
-        setShort('');
-        setVisitCount(-1);
-        setMsg('');
-    }
-
-    const generateURL = async (inputURL: string) => {
-        try {
-            inputValidator.parse(inputURL);
-
-            axios.post(apiEndpoint, { url: inputURL })
-                .then((response) => handleGenerated(
-                    response.data.short_hash, response.data.visit_count))
-                .catch((error) => handleError(error.request.responseText));
-        } catch (err) {
-            handleError("Please provide a valid URL");
-        }
-    }
-
-    const copyText = () => {
-        navigator.clipboard.writeText(short);
-        setMsg("Text copied!");
-    }
 
     return (
         <div className="max-w-[2000px] mx-auto h-screen text-neutral-900 bg-white">
@@ -82,76 +50,19 @@ export default function App() {
             <h3 className="pt-8 text-xl text-center">Enter a link to shorten, and get stats if URL already exists!</h3>
 
             <div className="mx-8 md:mx-32 lg:mx-52">
-                {/* URL Form */
-                    !err404 &&
-                    <div className="pt-8 pb-4 flex justify-center">
-                        <div className="relative flex h-10 w-full min-w-[200px] max-w-[24rem] md:max-w-[48rem] lg:max-w-[56rem] text-lg">
-                            <input
-                                type="text"
-                                className="peer h-full w-full rounded-[7px] border border-blue-gray-200 border-t-transparent bg-transparent px-3 py-2.5 pr-20 font-sans text-sm font-normal text-blue-gray-700 outline outline-0 transition-all placeholder-shown:border placeholder-shown:border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 focus:border-2 focus:border-amber-400 focus:border-t-transparent focus:outline-0 disabled:border-0 disabled:bg-blue-gray-50"
-                                onChange={(e) => setValue(e.target.value)}
-                                placeholder=" "
-                                required
-                            />
-                            <button
-                                type="button"
-                                className="!absolute right-1 top-1 z-10 select-none rounded bg-amber-400 py-2 px-4 text-center align-middle font-sans text-xs font-bold uppercase text-black shadow-md shadow-amber-400/20 transition-all hover:shadow-lg hover:shadow-amber-400/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none peer-placeholder-shown:pointer-events-none peer-placeholder-shown:bg-blue-gray-500 peer-placeholder-shown:opacity-50 peer-placeholder-shown:shadow-none"
-                                data-ripple-light="true"
-                                onClick={() => generateURL(value)}
-                            >
-                                Generate
-                            </button>
-                            <label className="before:content[' '] after:content[' '] pointer-events-none absolute left-0 -top-1.5 flex h-full w-full select-none text-[11px] font-normal leading-tight text-blue-gray-400 transition-all before:pointer-events-none before:mt-[6.5px] before:mr-1 before:box-border before:block before:h-1.5 before:w-2.5 before:rounded-tl-md before:border-t before:border-l before:border-blue-gray-200 before:transition-all after:pointer-events-none after:mt-[6.5px] after:ml-1 after:box-border after:block after:h-1.5 after:w-2.5 after:flex-grow after:rounded-tr-md after:border-t after:border-r after:border-blue-gray-200 after:transition-all peer-placeholder-shown:text-sm peer-placeholder-shown:leading-[3.75] peer-placeholder-shown:text-blue-gray-500 peer-placeholder-shown:before:border-transparent peer-placeholder-shown:after:border-transparent peer-focus:text-[11px] peer-focus:leading-tight peer-focus:text-amber-400 peer-focus:before:border-t-2 peer-focus:before:border-l-2 peer-focus:before:!border-amber-400 peer-focus:after:border-t-2 peer-focus:after:border-r-2 peer-focus:after:!border-amber-400 peer-disabled:text-transparent peer-disabled:before:border-transparent peer-disabled:after:border-transparent peer-disabled:peer-placeholder-shown:text-blue-gray-500">
-                                Long URL
-                            </label>
-                        </div>
-                    </div>
+                { !err404 && 
+                    <InputField 
+                        setGeneratedData={setGeneratedData}
+                        setMessageData={setMessageData} /> 
                 }
 
-                <div className="pb-4 flex justify-center">
-                    {/* Generated Short URL */
-                        short !== '' && 
-                        <div className="relative flex h-10 w-full min-w-[200px] max-w-[24rem] md:max-w-[48rem] lg:max-w-[56rem] text-lg">
-                            <p className="peer h-full w-full rounded-[7px] border border-black-200 px-3 py-2.5 pr-20 font-sans text-sm font-normal text-blue-gray-700 outline outline-0 transition-all">
-                                {short.toString()}
-                            </p>
-                            <button
-                                type="button"
-                                className="!absolute right-1 top-1 z-10 select-none rounded bg-amber-400 py-2 px-4 text-center align-middle font-sans text-xs font-bold uppercase text-black shadow-md shadow-amber-400/20 transition-all hover:shadow-lg hover:shadow-amber-400/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none peer-placeholder-shown:pointer-events-none peer-placeholder-shown:bg-blue-gray-500 peer-placeholder-shown:opacity-50 peer-placeholder-shown:shadow-none"
-                                data-ripple-light="true"
-                                onClick={() => copyText()}
-                            >
-                                Copy
-                            </button>
-                        </div>
-                    }
-                </div>
-
-                {/* Visited Count */
-                    visitCount >= 0 && 
-                    <p className="h-10 w-full min-w-[200px] text-center pt-3"> 
-                        <span className="font-bold">Visit Count: </span>
-                        {visitCount.toString()}
-                    </p>
+                { generatedData.shortURL !== '' && 
+                    <URLInfo 
+                        data={generatedData}
+                        setMessage={setMessageData} />
                 }
 
-                {/* Success Message */
-                    msg !== '' && 
-                    <div className="py-4 flex justify-center">
-                        <p className="bg-green-600 text-white text-center text-lg min-w-[200px] max-w-[24rem] md:max-w-[48rem] lg:max-w-[56rem]">
-                            {msg}
-                        </p>
-                    </div>
-                }
-
-                {/* Error Message */
-                    error !== '' && 
-                    <div className="py-4 flex justify-center">
-                        <p className="bg-red-700 text-white text-center text-lg min-w-[200px] max-w-[24rem] md:max-w-[48rem] lg:max-w-[56rem]">
-                            {error}
-                        </p>
-                    </div>
-                }
+                { messageData.text !== '' && <Toast data={messageData} /> }
             </div>
         </div>
     );
