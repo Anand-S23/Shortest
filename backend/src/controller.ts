@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import sha256 from 'crypto-js/sha256';
+import { z } from 'zod';
 
 import { pg_pool, query } from "./db";
 
@@ -35,9 +36,21 @@ export const redirectURL = async (req: Request, res: Response) => {
     }
 }
 
+const inputValidator = z.string()
+    .trim()
+    .url({ message: "Must provide a valid URL" })
+    .startsWith("https://", { message: "Must provide a valid URL" });
+
 export const postURL = async (req: Request, res: Response) => {
+    let { url } = req.body;
+
     try {
-        const { url } = req.body;
+        url = inputValidator.parse(url);
+    } catch (err) {
+        return res.status(400).json('Invalid url provided');
+    }
+
+    try {
         const long_duplicate = await query(
             'SELECT * FROM shortest WHERE long_url = $1', [url]);
 
