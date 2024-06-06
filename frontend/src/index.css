@@ -1,7 +1,7 @@
+@import url('https://fonts.googleapis.com/css2?family=Ubuntu&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-@import url('https://fonts.googleapis.com/css2?family=Ubuntu&display=swap');
 
 *,
 *::before,
@@ -65,3 +65,4 @@ svg {
     scroll-behavior: auto !important;
   }
 }
+

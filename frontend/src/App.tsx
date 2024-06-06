@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ReactComponent as Logo } from './link.svg';
+import linkLogo from '/link.svg';
 import { MessageData, Toast } from './components/Toast';
 import { URLData, URLInfo } from './components/URLInfo';
 import { InputField } from './components/InputField';
@@ -41,7 +41,7 @@ export default function App() {
     return (
         <div className="max-w-[2000px] mx-auto h-screen text-neutral-900 bg-white">
             <nav className="mx-auto p-4 bg-amber-400 flex justify-center">
-                <Logo className="w-8 h-8"/>
+                <img src={linkLogo} className="w-8 h-8" alt=''/>
                 <h1 className="text-3xl font-ubuntu font-bold text-black px-1">
                     Shortest
                 </h1>

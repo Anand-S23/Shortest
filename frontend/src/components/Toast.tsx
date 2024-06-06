@@ -16,3 +16,4 @@ export const Toast = ({ data }: ToastProps) => {
         </div>
     );
 }
+    

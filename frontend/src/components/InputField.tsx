@@ -65,3 +65,4 @@ export const InputField = ({setGeneratedData, setMessageData}: InputFieldProps) 
         </div>
     );
 }
+

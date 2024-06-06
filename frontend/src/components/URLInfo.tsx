@@ -41,3 +41,4 @@ export const URLInfo = ({data, setMessage}: URLInfoProps) => {
         </>
     );
 }
+

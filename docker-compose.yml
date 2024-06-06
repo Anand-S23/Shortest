@@ -11,7 +11,7 @@ services:
       - ./short_db:/var/lib/postgresql/data
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
-      - '6500:5432'
+      - '6000:5432'
     networks:
       - shared-network
 
@@ -20,7 +20,7 @@ services:
     container_name: short_redis
     restart: always
     ports:
-      - '6380:6379'
+      - '6001:6379'
     volumes: 
       - short_redis:/data
     networks:
@@ -32,7 +32,7 @@ services:
       context: backend
       dockerfile: Dockerfile
     ports:
-      - '3001:3001'
+      - '8000:8000'
     env_file:
       - .env
     depends_on:
